@@ -1,14 +1,13 @@
-package com.example.rabbitmqspringboot.rabbitmq;
+package com.example.demo.rabbitmq;
 
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.amqp.CachingConnectionFactoryConfigurer;
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionFactoryBeanConfigurer;
-import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
-import org.springframework.boot.autoconfigure.amqp.RabbitTemplateConfigurer;
+import org.springframework.boot.autoconfigure.amqp.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -28,7 +27,8 @@ import java.util.Optional;
 @Configuration
 public class MultipleRabbitTemplateConfiguration {
 
-    // 一个连接和一个 RabbitTemplate 对应
+    // 一个 ConnectionFactory 和一个 RabbitTemplate 对应；如果有多个虚拟机，则要创建多个 ConnectionFactory 和 RabbitTemplate
+    // 一个 ConnectionFactory 和多个 RabbitListener 对应；一个用户可以监听多个队列，所以 RabbitListener 也可以只有一个
     @Bean("rabbitConnectionFactoryOne")
     public CachingConnectionFactory rabbitConnectionFactory(
             @Value("${spring.rabbitmq.addresses}") String addresses, RabbitProperties properties,
@@ -39,25 +39,33 @@ public class MultipleRabbitTemplateConfiguration {
                 rabbitConnectionFactoryBeanConfigurer, rabbitCachingConnectionFactoryConfigurer);
     }
 
-    @Bean("rabbitTemplate")
+    @Bean("rabbitTemplateOne")
     public RabbitTemplate rabbitTemplate(RabbitTemplateConfigurer configurer,
-                                         ConnectionFactory connectionFactory) throws Exception {
+                                         @Qualifier("rabbitConnectionFactoryOne") ConnectionFactory connectionFactory) {
 
         RabbitTemplate template = new RabbitTemplate();
         configurer.configure(template, connectionFactory);
         return template;
     }
 
-    // 下面创建监听器
+    @Bean("rabbitListenerOne")
+    public SimpleRabbitListenerContainerFactory myFactory(SimpleRabbitListenerContainerFactoryConfigurer configurer,
+                                                          @Qualifier("rabbitConnectionFactoryOne") ConnectionFactory connectionFactory) {
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        // 如果不设置的话 prefetchCount 默认为 250，同样的最少也是 250
+        factory.setPrefetchCount(300);
+        configurer.configure(factory, connectionFactory);
+        return factory;
+    }
 
 
     ////////////////////////////////////////////////////////////////
 
 
 
-
-
-
+    /* ******************************************************************************************************
+     * ***************************************** 下面的代码不需要修改 *****************************************
+     * ******************************************************************************************************/
 
 
     /**
