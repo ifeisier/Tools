@@ -53,6 +53,13 @@ public class MultipleRabbitTemplateConfiguration {
 
     ////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
     /**
      * 这个类就是对 {@link RabbitAutoConfiguration.RabbitConnectionFactoryCreator#rabbitConnectionFactory} 类的重写。
      * <p>
