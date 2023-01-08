@@ -26,5 +26,4 @@ public class QueueLock {
         Lock lock = this.lockList.get((topicQueueKey.hashCode() & 0x7fffffff) % this.size);
         lock.unlock();
     }
-    
 }
