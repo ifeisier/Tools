@@ -8,13 +8,10 @@ import java.util.Date;
 
 /**
  * java8日期工具.
- *
- * @author KimZing - kimzing@163.com
- * @since 2018-08-07 02:02
  */
-public final class DateUtil {
+public final class DateUtils {
 
-    private DateUtil() {
+    private DateUtils() {
 
     }
 
