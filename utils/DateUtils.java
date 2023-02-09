@@ -1,4 +1,4 @@
-package com.example.demo.utils;
+package com.ifeisier.jiuwanboduan.utils;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -8,11 +8,13 @@ import java.util.Date;
 
 /**
  * java8日期工具.
+ *
+ * @author KimZing - kimzing@163.com
+ * @since 2018-08-07 02:02
  */
 public final class DateUtils {
 
-    private DateUtils() {
-
+    private DateUtil() {
     }
 
     // 获取当前时间的LocalDateTime对象
@@ -26,20 +28,66 @@ public final class DateUtils {
     // LocalDateTime.now().isAfter()
 
 
-    public static DateTimeFormatter createDateTimeFormatter(String s) {
-        return DateTimeFormatter.ofPattern(s);
+    /**
+     * 创建 DateTimeFormatter
+     *
+     * @param pattern 格式
+     * @return DateTimeFormatter
+     */
+    public static DateTimeFormatter createDateTimeFormatter(String pattern) {
+        return DateTimeFormatter.ofPattern(pattern);
     }
-
 
     /**
-     * Date转换为LocalDateTime.
+     * 格式转换
      *
-     * @param date
-     * @return java.time.LocalDateTime
+     * @param dateTime 日期时间
+     * @param pattern  格式
+     * @return 转换完后的日期时间
      */
-    public static LocalDateTime convertDateToLDT(Date date) {
-        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+    public static String format(LocalDateTime dateTime, String pattern) {
+        return dateTime.format(createDateTimeFormatter(pattern));
     }
+
+    public static String format(LocalDate date, String pattern) {
+        return date.format(createDateTimeFormatter(pattern));
+    }
+
+
+    ////////////////////////// 字符串日期转 LocalDate 或 LocalDateTime //////////////////////////
+
+    public static LocalDate convertStrToLD(String date) {
+        return LocalDate.parse(date, createDateTimeFormatter("yyyy-MM-dd"));
+    }
+
+    public static LocalDateTime convertStrToLDT(String date) {
+        return LocalDateTime.parse(date, createDateTimeFormatter("yyyy-MM-dd HH:mm:ss:SSS"));
+    }
+
+
+    ////////////////////////// Date 转 LocalDate 或 LocalDateTime //////////////////////////
+
+
+    public static LocalDate convertDateToLD(Date date) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    public static LocalDateTime convertDateToLDT(Date date) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+
+    ////////////////////////// LocalDate 或 LocalDateTime 转 Date //////////////////////////
+
+
+    public static Date convertLDToDate(LocalDate date) {
+        return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    public static Date convertLDTToDate(LocalDateTime time) {
+        return Date.from(time.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
 
     /**
      * 格式化Unix to LocalDateTime
@@ -51,20 +99,6 @@ public final class DateUtils {
     public static String formatUnixTimeToLocalDateTime(long unixTimeInMilliSecond, String pattern) {
         LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochMilli(unixTimeInMilliSecond), ZoneOffset.ofHours(8));
         return time.format(DateTimeFormatter.ofPattern(pattern));
-    }
-
-    /**
-     * LocalDateTime转换为Date.
-     *
-     * @param time
-     * @return java.util.Date
-     */
-    public static Date convertLDTToDate(LocalDateTime time) {
-        return Date.from(time.atZone(ZoneId.systemDefault()).toInstant());
-    }
-
-    public static Date convertLDTToDate(LocalDate date) {
-        return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     }
 
 
@@ -88,16 +122,6 @@ public final class DateUtils {
         return time.atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
     }
 
-    /**
-     * 获取指定时间的指定格式.
-     *
-     * @param time
-     * @param pattern
-     * @return java.lang.String
-     */
-    public static String formatTime(LocalDateTime time, String pattern) {
-        return time.format(DateTimeFormatter.ofPattern(pattern));
-    }
 
     /**
      * 获取当前时间的指定格式.
@@ -106,7 +130,7 @@ public final class DateUtils {
      * @return java.lang.String
      */
     public static String formatNow(String pattern) {
-        return formatTime(LocalDateTime.now(), pattern);
+        return format(LocalDateTime.now(), pattern);
     }
 
     /**
