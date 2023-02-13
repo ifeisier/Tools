@@ -12,7 +12,7 @@ import java.util.Date;
  * @author KimZing - kimzing@163.com
  * @since 2018-08-07 02:02
  */
-public final class DateUtils {
+public final class DateUtil {
 
     private DateUtil() {
     }
