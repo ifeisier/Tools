@@ -13,6 +13,16 @@ import java.util.Date;
  * @since 2018-08-07 02:02
  */
 public final class DateUtil {
+    
+    public static String YYYY = "yyyy";
+
+    public static String YYYY_MM = "yyyy-MM";
+
+    public static String YYYY_MM_DD = "yyyy-MM-dd";
+
+    public static String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
+
+    public static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
     private DateUtil() {
     }
