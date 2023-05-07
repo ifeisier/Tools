@@ -1,4 +1,4 @@
-package com.ifeisier.stock.quantify.redis;
+
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONReader;
@@ -11,8 +11,6 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Redis 使用 FastJson 序列化
- *
- * @author ruoyi
  */
 public class FastJson2JsonRedisSerializer<T> implements RedisSerializer<T> {
     public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;

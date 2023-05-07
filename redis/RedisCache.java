@@ -1,4 +1,4 @@
-package com.ifeisier.stock.quantify.redis;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundSetOperations;
@@ -12,8 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * spring redis 工具类
- *
- * @author ruoyi
  **/
 @SuppressWarnings(value = {"unchecked", "rawtypes"})
 @Component

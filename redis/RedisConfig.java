@@ -1,4 +1,4 @@
-package com.ifeisier.stock.quantify.redis;
+
 
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
@@ -11,8 +11,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * redis 配置
- *
- * @author ruoyi
  */
 @Configuration
 @EnableCaching
@@ -33,6 +31,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(serializer);
 
+        // 这个方法会初始化连接池并预热连接池中的连接。
         template.afterPropertiesSet();
         return template;
     }
