@@ -1,0 +1,7 @@
+sudo docker build --no-cache -f dockerfile文件名 -t 镜像名:版本 .
+
+sudo docker build --no-cache -f Dockerfile -t testrocketmq:1 .
+sudo docker run -d --name testrocketmq -p 8080:8087 -p 9876:9876 -p 10909:10909 -p 10911:10911 -p 10912:10912 testrocketmq:1
+sudo docker stop testrocketmq
+sudo docker rm testrocketmq
+sudo docker image rm testrocketmq:1
