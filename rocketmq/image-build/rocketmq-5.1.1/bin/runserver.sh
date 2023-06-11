@@ -24,7 +24,6 @@ error_exit ()
     exit 1
 }
 
-
 find_java_home()
 {
     case "`uname`" in
@@ -45,12 +44,10 @@ find_java_home
 
 JAVA_HOME=/opt/java/openjdk
 
+
 [ ! -e "$JAVA_HOME/bin/java" ] && JAVA_HOME=$HOME/jdk/java
 [ ! -e "$JAVA_HOME/bin/java" ] && JAVA_HOME=/usr/java
 [ ! -e "$JAVA_HOME/bin/java" ] && error_exit "Please set the JAVA_HOME variable in your environment, We need java(x64)!"
-
-echo "asdasdasd!!!3" $JAVA_HOME
-echo "asdasdasd!!!4" $HOME
 
 export JAVA_HOME
 export JAVA="$JAVA_HOME/bin/java"
@@ -105,10 +102,13 @@ choose_gc_options()
 
 choose_gc_log_directory
 choose_gc_options
-JAVA_OPT="${JAVA_OPT} -XX:-OmitStackTraceInFastThrow"
-JAVA_OPT="${JAVA_OPT} -XX:-UseLargePages"
-#JAVA_OPT="${JAVA_OPT} -Xdebug -Xrunjdwp:transport=dt_socket,address=9555,server=y,suspend=n"
-JAVA_OPT="${JAVA_OPT} ${JAVA_OPT_EXT}"
-JAVA_OPT="${JAVA_OPT} -cp ${CLASSPATH}"
+#JAVA_OPT="${JAVA_OPT} -XX:-OmitStackTraceInFastThrow"
+#JAVA_OPT="${JAVA_OPT} -XX:-UseLargePages"
+##JAVA_OPT="${JAVA_OPT} -Xdebug -Xrunjdwp:transport=dt_socket,address=9555,server=y,suspend=n"
+#JAVA_OPT="${JAVA_OPT} ${JAVA_OPT_EXT}"
+#JAVA_OPT="${JAVA_OPT} -cp ${CLASSPATH}"
+
+
+
 
 "$JAVA" ${JAVA_OPT} $@
