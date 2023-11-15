@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const logName = "xxxx"
+const logName = "IOTDataServices"
 
 var once sync.Once
 var logger *zap.Logger
