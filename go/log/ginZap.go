@@ -1,8 +1,10 @@
 package log
 
 import (
+	"bytes"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"io"
 	"time"
 )
 
@@ -11,8 +13,11 @@ func GinZapLogger(logger *zap.Logger) gin.HandlerFunc {
 		start := time.Now()
 		path := c.Request.URL.Path
 		query := c.Request.URL.RawQuery
+
 		data, _ := c.GetRawData()
 		form := string(data)
+		c.Set("RawData", form)
+		c.Request.Body = io.NopCloser(bytes.NewReader(data))
 		c.Next()
 
 		cost := time.Since(start)
