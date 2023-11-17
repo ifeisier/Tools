@@ -3,7 +3,6 @@ package mqtt
 import (
 	"IOTDataServices/log"
 	"context"
-	"errors"
 	"github.com/eclipse/paho.golang/autopaho"
 	"github.com/eclipse/paho.golang/paho"
 	"net/url"
@@ -22,53 +21,53 @@ func (c *Client) SetUsernamePassword(un, pwd string) {
 	c.password = []byte(pwd)
 }
 
-func (c *Client) NewConnection() (*autopaho.ConnectionManager, error) {
-	c.m.Lock()
-	defer c.m.Unlock()
+// Connection 没有连接会创建新的连接，否则就会返回已经创建的连接
+func (c *Client) Connection() (*autopaho.ConnectionManager, error) {
+	c.once.Do(func() {
+		urls := make([]*url.URL, 0, len(c.serverURL))
+		for _, v := range c.serverURL {
+			su, _ := url.Parse(v)
+			urls = append(urls, su)
+		}
 
-	if c.isConnection {
-		return nil, errors.New("连接不能重复创建")
-	}
+		cliCfg := autopaho.ClientConfig{
+			BrokerUrls:     urls,
+			KeepAlive:      60,
+			OnConnectionUp: c.connectionUp,
+			OnConnectError: c.connectError,
+			Debug:          paho.NOOPLogger{},
+			ClientConfig: paho.ClientConfig{
+				ClientID:           c.clientID,
+				OnClientError:      c.clientError,
+				OnServerDisconnect: c.serverDisconnect,
+			},
+		}
 
-	urls := make([]*url.URL, 0, len(c.serverURL))
-	for _, v := range c.serverURL {
-		su, _ := url.Parse(v)
-		urls = append(urls, su)
-	}
+		if c.username != "" {
+			cliCfg.SetUsernamePassword(c.username, c.password)
+		}
 
-	cliCfg := autopaho.ClientConfig{
-		BrokerUrls:     urls,
-		KeepAlive:      60,
-		OnConnectionUp: c.connectionUp,
-		OnConnectError: c.connectError,
-		Debug:          paho.NOOPLogger{},
-		ClientConfig: paho.ClientConfig{
-			ClientID:           c.clientID,
-			OnClientError:      c.clientError,
-			OnServerDisconnect: c.serverDisconnect,
-		},
-	}
+		if c.messageHandler != nil {
+			cliCfg.ClientConfig.Router = paho.NewSingleHandlerRouter(c.messageHandler)
+		}
 
-	if c.username != "" {
-		cliCfg.SetUsernamePassword(c.username, c.password)
-	}
+		cm, err := autopaho.NewConnection(context.Background(), cliCfg)
+		if err != nil {
+			c.connectionManager = cm
+			c.error = err
+			return
+		}
 
-	if c.messageHandler != nil {
-		cliCfg.ClientConfig.Router = paho.NewSingleHandlerRouter(c.messageHandler)
-	}
+		err = cm.AwaitConnection(context.Background())
+		if err != nil {
+			c.connectionManager = nil
+			c.error = err
+			return
+		}
+		c.connectionManager = cm
+	})
 
-	cm, err := autopaho.NewConnection(context.Background(), cliCfg)
-	if err != nil {
-		return cm, err
-	}
-
-	err1 := cm.AwaitConnection(context.Background())
-	if err1 != nil {
-		return nil, err1
-	}
-
-	c.isConnection = true
-	return cm, err
+	return c.connectionManager, c.error
 }
 
 func (c *Client) connectionUp(cm *autopaho.ConnectionManager, pc *paho.Connack) {

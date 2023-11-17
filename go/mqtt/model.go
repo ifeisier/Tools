@@ -1,19 +1,21 @@
 package mqtt
 
 import (
+	"github.com/eclipse/paho.golang/autopaho"
 	"github.com/eclipse/paho.golang/paho"
 	"sync"
 )
 
 type Client struct {
-	serverURL      []string
-	clientID       string
-	username       string
-	password       []byte
-	subscribe      *paho.Subscribe
-	messageHandler paho.MessageHandler
-	m              sync.Mutex
-	isConnection   bool
+	serverURL         []string
+	clientID          string
+	username          string
+	password          []byte
+	subscribe         *paho.Subscribe
+	messageHandler    paho.MessageHandler
+	connectionManager *autopaho.ConnectionManager
+	error             error
+	once              sync.Once
 }
 
 func NewClient(serverURL []string, subscribe *paho.Subscribe) *Client {
