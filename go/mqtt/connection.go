@@ -1,11 +1,15 @@
 package mqtt
 
 import (
-	"IOTDataServices/log"
+	"IOTDataServices/shared/log"
 	"context"
 	"github.com/eclipse/paho.golang/autopaho"
 	"github.com/eclipse/paho.golang/paho"
 	"net/url"
+)
+
+var (
+	logger = log.GetLog()
 )
 
 func (c *Client) SetMessageHandler(m paho.MessageHandler) {
@@ -71,30 +75,30 @@ func (c *Client) Connection() (*autopaho.ConnectionManager, error) {
 }
 
 func (c *Client) connectionUp(cm *autopaho.ConnectionManager, pc *paho.Connack) {
-	log.GetLog().Info("连接到 MQTT 服务端")
+	logger.Info("连接到 MQTT 服务端")
 
 	if _, err := cm.Subscribe(context.Background(), c.subscribe); err != nil {
 		m := make(map[string]any)
 		m["err"] = err.Error()
-		log.GetLog().Error("订阅失败:", log.MsgInfo(m))
+		logger.Error("订阅失败:", log.MsgInfo(m))
 	}
 }
 
 func (c *Client) connectError(err error) {
 	m := make(map[string]any)
 	m["err"] = err.Error()
-	log.GetLog().Error("尝试连接到 MQTT 客户端出错:", log.MsgInfo(m))
+	logger.Error("尝试连接到 MQTT 客户端出错:", log.MsgInfo(m))
 }
 
 func (c *Client) clientError(err error) {
 	m := make(map[string]any)
 	m["err"] = err.Error()
-	log.GetLog().Error("网络原因导致连接断开:", log.MsgInfo(m))
+	logger.Error("网络原因导致连接断开:", log.MsgInfo(m))
 }
 
 func (c *Client) serverDisconnect(d *paho.Disconnect) {
 	m := make(map[string]any)
 	m["reason"] = d.Properties.ReasonString
 	m["code"] = d.ReasonCode
-	log.GetLog().Error("收到服务端的断开连接命令:", log.MsgInfo(m))
+	logger.Error("收到服务端的断开连接命令:", log.MsgInfo(m))
 }
